@@ -1,134 +1,286 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { motion } from 'framer-motion';
+import Button from '@/components/Button';
+import { useState } from 'react';
 
-export default function Volunteer() {
+export default function VolunteerPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    phone: '',
+    skills: '',
+    availability: '',
+    message: '',
   });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [responseMessage, setResponseMessage] = useState('');
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
+  const handleChange = function(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = function(e: React.FormEvent) {
     e.preventDefault();
-    setStatus('loading');
-
-    try {
-      const response = await fetch('/api/volunteer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setStatus('success');
-        setResponseMessage(data.message);
-        // Reset form
-        setFormData({ name: '', email: '', message: '' });
-      } else {
-        setStatus('error');
-        setResponseMessage(data.error || 'Something went wrong');
-      }
-    } catch (error) {
-      setStatus('error');
-      setResponseMessage('Failed to submit form. Please try again.');
-    }
+    console.log('Form submitted:', formData);
+    // Add your form submission logic here
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="mx-auto max-w-2xl px-6">
-        <h1 className="mb-8 text-4xl font-bold text-gray-900">
-          Volunteer With Us
-        </h1>
-        
-        <div className="rounded-lg bg-white p-8 shadow-md">
-          <p className="mb-6 text-lg text-gray-700">
-            Join our team of dedicated volunteers making a difference in the community.
-          </p>
+    <main className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <motion.section
+        className="relative bg-gradient-to-r from-brand-primary via-brand-primary-dark to-brand-secondary py-28 text-white"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 right-20 h-64 w-64 rounded-full bg-white blur-3xl" />
+          <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-white blur-3xl" />
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name Field */}
-            <div>
-              <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="John Doe"
-              />
+        <div className="relative z-10 mx-auto max-w-6xl px-6">
+          <motion.h1
+            className="mb-6 text-5xl font-bold md:text-6xl"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+          >
+            Be the Change
+          </motion.h1>
+          <motion.p
+            className="max-w-2xl text-xl text-gray-100"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Join our community of volunteers creating real impact in communities worldwide.
+          </motion.p>
+        </div>
+      </motion.section>
+
+      {/* Main Content */}
+      <div className="mx-auto max-w-6xl px-6 py-20">
+        <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
+          {/* Left Column - Info */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={itemVariants}
+          >
+            <h2 className="mb-8 text-4xl font-bold text-brand-primary">Why Volunteer?</h2>
+
+            <div className="space-y-8">
+              <div>
+                <h3 className="mb-3 text-2xl font-bold text-gray-900">Make Real Impact</h3>
+                <p className="text-lg text-gray-600">
+                  Your skills and time directly contribute to improving lives and strengthening communities. Whether you mentor students, support healthcare initiatives, or help entrepreneurs, your work makes a tangible difference.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="mb-3 text-2xl font-bold text-gray-900">Grow With Us</h3>
+                <p className="text-lg text-gray-600">
+                  Develop new skills, expand your network, and gain valuable experience working with passionate changemakers. We provide mentorship and support every step of the way.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="mb-3 text-2xl font-bold text-gray-900">Flexible & Rewarding</h3>
+                <p className="text-lg text-gray-600">
+                  Choose opportunities that fit your schedule and skills. Whether you can contribute a few hours weekly or more, we have roles that work for you. Receive recognition and certificates for your service.
+                </p>
+              </div>
             </div>
 
-            {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="john@example.com"
-              />
+            {/* Stats */}
+            <div className="mt-12 grid gap-6 sm:grid-cols-3">
+              <div className="rounded-lg bg-brand-primary/5 p-6 text-center">
+                <div className="text-3xl font-bold text-brand-primary">1,000+</div>
+                <p className="mt-2 text-gray-600">Active Volunteers</p>
+              </div>
+              <div className="rounded-lg bg-brand-primary/5 p-6 text-center">
+                <div className="text-3xl font-bold text-brand-primary">50K+</div>
+                <p className="mt-2 text-gray-600">Hours Served</p>
+              </div>
+              <div className="rounded-lg bg-brand-primary/5 p-6 text-center">
+                <div className="text-3xl font-bold text-brand-primary">100+</div>
+                <p className="mt-2 text-gray-600">Communities</p>
+              </div>
             </div>
+          </motion.div>
 
-            {/* Message Field */}
-            <div>
-              <label htmlFor="message" className="mb-2 block text-sm font-medium text-gray-700">
-                Why do you want to volunteer?
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                required
-                rows={5}
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Tell us about your interest in volunteering..."
-              />
-            </div>
+          {/* Right Column - Form */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={itemVariants}
+          >
+            <div className="rounded-3xl bg-gray-50 p-10 shadow-lg">
+              <h2 className="mb-8 text-3xl font-bold text-gray-900">Get Started</h2>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className="w-full rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
-            >
-              {status === 'loading' ? 'Submitting...' : 'Submit Application'}
-            </button>
-          </form>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Name */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-brand-primary focus:outline-none"
+                    placeholder="Your name"
+                    required
+                  />
+                </div>
 
-          {/* Status Messages */}
-          {status === 'success' && (
-            <div className="mt-4 rounded-lg bg-green-50 p-4 text-green-800">
-              {responseMessage}
+                {/* Email */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-brand-primary focus:outline-none"
+                    placeholder="your@email.com"
+                    required
+                  />
+                </div>
+
+                {/* Phone */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-brand-primary focus:outline-none"
+                    placeholder="+1 (555) 000-0000"
+                  />
+                </div>
+
+                {/* Skills */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900">
+                    Skills & Interests
+                  </label>
+                  <select
+                    name="skills"
+                    value={formData.skills}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-brand-primary focus:outline-none"
+                    required
+                  >
+                    <option value="">Select an area</option>
+                    <option value="education">Education & Mentoring</option>
+                    <option value="healthcare">Healthcare Support</option>
+                    <option value="business">Business Advisory</option>
+                    <option value="community">Community Organization</option>
+                    <option value="technology">Digital Skills</option>
+                    <option value="content">Content Creation</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                {/* Availability */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900">
+                    Weekly Availability
+                  </label>
+                  <select
+                    name="availability"
+                    value={formData.availability}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-brand-primary focus:outline-none"
+                    required
+                  >
+                    <option value="">Select hours</option>
+                    <option value="1-3">1-3 hours per week</option>
+                    <option value="3-6">3-6 hours per week</option>
+                    <option value="6-10">6-10 hours per week</option>
+                    <option value="10+">10+ hours per week</option>
+                    <option value="flexible">Flexible</option>
+                  </select>
+                </div>
+
+                {/* Message */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-900">
+                    Tell Us About Yourself
+                  </label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-brand-primary focus:outline-none"
+                    placeholder="Share your motivation and experience..."
+                    rows={4}
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <motion.button
+                  type="submit"
+                  className="w-full rounded-lg bg-brand-secondary px-6 py-3 font-semibold text-white transition hover:bg-brand-secondary-dark"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Submit Application
+                </motion.button>
+              </form>
+
+              <p className="mt-6 text-center text-sm text-gray-600">
+                We&apos;ll get back to you within 48 hours.
+              </p>
             </div>
-          )}
-          {status === 'error' && (
-            <div className="mt-4 rounded-lg bg-red-50 p-4 text-red-800">
-              {responseMessage}
-            </div>
-          )}
+          </motion.div>
         </div>
       </div>
-    </div>
+
+      {/* CTA Footer */}
+      <motion.section
+        className="bg-brand-primary py-16 text-white"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={itemVariants}
+      >
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <h2 className="mb-4 text-3xl font-bold">Have Questions?</h2>
+          <p className="mb-6 text-lg text-gray-100">
+            Reach out to our volunteer coordinator at <span className="font-semibold">volunteers@darcadia.org</span>
+          </p>
+          <Button
+            variant="secondary"
+            size="lg"
+            href="/contact"
+          >
+            Contact Us
+          </Button>
+        </div>
+      </motion.section>
+    </main>
   );
 }
 

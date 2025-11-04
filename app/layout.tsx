@@ -1,10 +1,22 @@
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import './globals.css';
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
-export const metadata = {
-  title: 'Non-Profit Foundation',
-  description: 'Making a difference in our community',
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "D Arcadia Foundation - Empowering Communities",
+  description: "Creating sustainable change through education, healthcare, and economic empowerment",
 };
 
 export default function RootLayout({
@@ -12,13 +24,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const bodyClass = geistSans.variable + " " + geistMono.variable;
+  
   return (
     <html lang="en">
-      <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <body className={bodyClass}>
         <Header />
-        <main style={{ flex: 1, padding: '2rem' }}>
-          {children}
-        </main>
+        {children}
         <Footer />
       </body>
     </html>
