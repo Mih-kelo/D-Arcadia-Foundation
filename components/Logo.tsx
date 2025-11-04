@@ -1,6 +1,6 @@
-export default function Logo() {
+export default function Logo({ className }: { className?: string }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className={flex items-center gap-2 ${className || ''}}>
       <span className="text-3xl font-bold">D</span>
       <div>
         <span className="block text-lg font-bold leading-none">Arcadia</span>

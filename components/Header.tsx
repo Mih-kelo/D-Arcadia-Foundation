@@ -1,221 +1,173 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import Logo from '@/components/Logo';
+import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import Logo from './Logo';
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const pathname = usePathname();
 
-  useEffect(function() {
-    const handleScroll = function() {
+  useEffect(() => {
+    const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-
     window.addEventListener('scroll', handleScroll);
-    return function() {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems = [
-    { label: 'Home', href: '/' },
-    { label: 'About', href: '/about' },
-    { label: 'Stories', href: '/stories' },
-    { label: 'Volunteer', href: '/volunteer' },
+  const navLinks = [
+    { href: '/', label: 'Home' },
+    { href: '/about', label: 'About' },
+    { href: '/stories', label: 'Stories' },
+    { href: '/volunteer', label: 'Volunteer' },
   ];
 
-  const isActive = function(href: string) {
-    return pathname === href;
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white shadow-lg backdrop-blur-md' 
-          : 'bg-gradient-to-b from-black/40 to-transparent'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all ${
+        isScrolled ? 'bg-white/80 backdrop-blur-md shadow-lg' : 'bg-transparent'
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="mx-auto max-w-7xl px-6 py-4">
-        <div className="flex items-center justify-between">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="flex h-20 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center group">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Logo className={isScrolled ? "text-brand-primary" : "text-white"} />
-            </motion.div>
-          </Link>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Link href="/">
+              <Logo />
+            </Link>
+          </motion.div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
-            {navItems.map(function(item, index) {
-              return (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.4 }}
+          <nav className="hidden gap-12 text-lg md:flex">
+            {navLinks.map((link, index) => (
+              <motion.div
+                key={index}
+                className="group"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  href={link.href}
+                  className={`relative font-semibold transition-colors ${
+                    isScrolled ? 'text-gray-800 hover:text-brand-primary' : 'text-white hover:text-brand-primary'
+                  }`}
                 >
-                  <Link
-                    href={item.href}
-                    className={`relative text-sm font-semibold transition-colors duration-300 ${
-                      isScrolled
-                        ? isActive(item.href)
-                          ? 'text-brand-primary'
-                          : 'text-gray-700 hover:text-brand-primary'
-                        : isActive(item.href)
-                        ? 'text-white'
-                        : 'text-gray-100 hover:text-white'
-                    }`}
-                  >
-                    {item.label}
-                    {isActive(item.href) && (
-                      <motion.div
-                        className={`absolute bottom-0 left-0 right-0 h-0.5 ${
-                          isScrolled ? 'bg-brand-primary' : 'bg-white'
-                        }`}
-                        layoutId="underline"
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    )}
-                  </Link>
-                </motion.div>
-              );
-            })}
+                  {link.label}
+                  <motion.div
+                    className="absolute -bottom-1 left-0 h-0.5 w-0 bg-brand-primary transition-all"
+                    initial={false}
+                    whileHover={{ width: '100%' }}
+                  />
+                </Link>
+              </motion.div>
+            ))}
           </nav>
 
-          {/* Donate Button */}
-          <motion.div
-            className="hidden md:block"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.4 }}
-          >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+          {/* CTA Buttons */}
+          <div className="hidden items-center gap-4 md:flex">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/donate"
-                className="px-6 py-2 bg-brand-secondary text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg"
+                className={`px-6 py-2 text-sm font-semibold transition-colors ${
+                  isScrolled
+                    ? 'text-white hover:text-brand-secondary'
+                    : 'text-brand-secondary hover:text-brand-secondary-dark'
+                }`}
               >
                 Donate
               </Link>
             </motion.div>
-          </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href="/volunteer"
+                className={`rounded-lg px-6 py-2 text-sm font-semibold shadow-md transition-colors ${
+                  isScrolled
+                    ? 'bg-brand-primary text-white hover:bg-brand-primary-dark'
+                    : 'bg-white text-brand-primary hover:bg-brand-secondary'
+                }`}
+              >
+                Volunteer
+              </Link>
+            </motion.div>
+          </div>
 
           {/* Mobile Menu Button */}
           <motion.button
-            className="md:hidden flex flex-col gap-1.5 focus:outline-none"
-            onClick={function() {
-              setIsOpen(!isOpen);
-            }}
+            className="md:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <motion.div
-              className={`h-0.5 w-6 transition-all ${
-                isScrolled ? 'bg-brand-primary' : 'bg-white'
-              }`}
-              animate={isOpen ? { rotate: 45, y: 12 } : { rotate: 0, y: 0 }}
-            />
-            <motion.div
-              className={`h-0.5 w-6 transition-all ${
-                isScrolled ? 'bg-brand-primary' : 'bg-white'
-              }`}
-              animate={isOpen ? { opacity: 0 } : { opacity: 1 }}
-            />
-            <motion.div
-              className={`h-0.5 w-6 transition-all ${
-                isScrolled ? 'bg-brand-primary' : 'bg-white'
-              }`}
-              animate={isOpen ? { rotate: -45, y: -12 } : { rotate: 0, y: 0 }}
-            />
+            <svg
+              className={`w-6 h-6 ${isScrolled ? 'text-gray-800' : 'text-white'}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {isOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
           </motion.button>
         </div>
+      </div>
 
-        {/* Mobile Navigation */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.nav
-              className="md:hidden mt-6 space-y-3"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-            >
-              {navItems.map(function(item) {
-                return (
-                  <motion.div
-                    key={item.href}
-                    variants={itemVariants}
-                  >
-                    <Link
-                      href={item.href}
-                      className={`block px-4 py-2 rounded-lg transition-colors ${
-                        isActive(item.href)
-                          ? 'bg-brand-primary text-white'
-                          : isScrolled
-                          ? 'text-gray-700 hover:bg-gray-100'
-                          : 'text-white hover:bg-white/10'
-                      }`}
-                      onClick={function() {
-                        setIsOpen(false);
-                      }}
-                    >
-                      {item.label}
-                    </Link>
-                  </motion.div>
-                );
-              })}
+      {/* Mobile Menu */}
+      <motion.div
+        className="md:hidden bg-white/90 backdrop-blur-md"
+        initial={{ height: 0, opacity: 0 }}
+        animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="container mx-auto px-6 py-4">
+          <nav className="flex flex-col gap-4">
+            {navLinks.map((link, index) => (
               <motion.div
-                variants={itemVariants}
+                key={index}
+                whileHover={{ x: 10 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <Link
-                  href="/donate"
-                  className="block w-full px-4 py-2 bg-brand-secondary text-white font-semibold rounded-lg text-center"
-                  onClick={function() {
-                    setIsOpen(false);
-                  }}
+                  href={link.href}
+                  className="py-2 text-lg font-semibold text-gray-800 hover:text-brand-primary transition"
                 >
-                  Donate
+                  {link.label}
                 </Link>
               </motion.div>
-            </motion.nav>
-          )}
-        </AnimatePresence>
-      </div>
+            ))}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link
+                href="/donate"
+                className="mt-4 w-full rounded-lg bg-brand-primary px-6 py-3 text-center text-white shadow-md"
+              >
+                Donate
+              </Link>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link
+                href="/volunteer"
+                className="w-full rounded-lg bg-brand-secondary px-6 py-3 text-center text-white shadow-md"
+              >
+                Volunteer
+              </Link>
+            </motion.div>
+          </nav>
+        </div>
+      </motion.div>
     </motion.header>
   );
 }
